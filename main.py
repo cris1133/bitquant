@@ -26,11 +26,12 @@ class papertrade(object):
 		price = float(getTicker()['ask'])
 		self.buys.append({"amount":amount, "price":price})
 		self.usd = self.usd - (amount * price)
-		self.btc = self.btc + amount
+		self.btc = self.btc + (amount*100000000)
 	def sell(self, amount):
 		price = float(getTicker()['bid'])
+		amount = amount * 100000000
 		self.sells.append({"amount":amount, "price":price})
-		self.btc = self.btc - amount
+		self.btc = self.btc - (amount*100000000)
 		self.usd = self.usd + (amount * price)
 		
 ## Testing stuff here
