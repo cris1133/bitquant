@@ -1,0 +1,4 @@
+bitquant
+========
+
+Bitcoin hackathon autotrader
