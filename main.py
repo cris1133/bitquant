@@ -29,7 +29,7 @@ class papertrade(object):
 		self.buys = []
 		self.sells = []
 		## BTC in Satoshi
-		self.btc = 100000000
+		self.btc = 0
 		self.usd = 1000
 	def buy(self, amount):
 		price = float(getTicker()['ask'])
@@ -69,9 +69,9 @@ def getBias(orders):
 	bRatio = (float(bids[-1][0]) - float(bids[0][0])) / float(bids[-1][1]) / sum(bV)
 	aRatio = (float(asks[-1][0]) - float(asks[0][0])) / float(asks[-1][1]) / sum(aV)
 	if abs(bRatio) > aRatio:
-		return "bid"
-	else:
 		return "ask"
+	else:
+		return "bid"
 
 ## Testing stuff here
 def test():
@@ -91,11 +91,17 @@ def test():
 			bias = getBias(orders)
 			if bias == "bid":
 				boughtAt = trade.buy(0.1)
+				mode = 1
+				print "BOUGHT 0.1BTC @ "+ str(boughtAt)
+				print trade.btc, trade.usd
 		else:
-			if float(getTicker()["bid"]) > boughtAt:
+			if getBias(orders) == "ask":
 				trade.sell(0.1)
-		## Trivial stuff here
-		print trade.btc, trade.usd, pulls
+				print "SOLD 0.1BTC"
+				print trade.btc, trade.usd
+				mode = 0
+			else:
+				print "HOLDING BTC"
 		cycles += 1
 		if cycles > 40:
 			pulls = 0
