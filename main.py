@@ -93,16 +93,16 @@ def test():
 		if mode == 0:
 			bias = getBias(orders)
 			if bias == "bid":
-				boughtAt = trade.buy(0.1)
+				boughtAt = trade.buy(1)
 				mode = 1
-				print "BOUGHT 0.1BTC @ "+ str(boughtAt)
+				print "BOUGHT 1BTC @ "+ str(boughtAt)
 				print trade.btc, trade.usd
 		else:
 			price = float(getTicker()["last"])
-			print price
+			print price, orders["asks"][findPeak(orders["asks"])][0]
 			if price > boughtAt or orders["asks"][findPeak(orders["asks"])][0] < boughtAt:
-				trade.sell(0.1)
-				print "SOLD 0.1BTC"
+				trade.sell(1)
+				print "SOLD 1BTC"
 				print trade.btc, trade.usd
 				mode = 0
 			else:
