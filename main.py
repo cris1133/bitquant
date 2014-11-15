@@ -32,7 +32,7 @@ class papertrade(object):
 		self.btc = 0
 		self.usd = 1000
 	def buy(self, amount):
-		price = float(getTicker()['ask'])
+		price = float(getTicker()['last'])
 		if self.usd < (amount * price):
 			return False
 		self.buys.append({"amount":amount, "price":price})
@@ -40,7 +40,7 @@ class papertrade(object):
 		self.btc = self.btc + (amount*100000000)
 		return price
 	def sell(self, amount):
-		price = float(getTicker()['bid'])
+		price = float(getTicker()['last'])
 		if self.btc < (amount*100000000):
 			return False
 		self.sells.append({"amount":amount, "price":price})
@@ -49,29 +49,31 @@ class papertrade(object):
 		return price
 
 def findPeak(data):
-	data = data[:20]
-	last = 0
 	lastV = 0
-	for item in range(len(data)-1):
-		diff = float(data[item+1][1]) - float(data[item][1])
-		if diff > last:
-			last = diff
+	last = 0
+	for item in range(len(data)):
+		if float(data[item][1]) > last:
+			last = float(data[item][1])
 			lastV = item
+	return lastV
 
 ## Quant helper functions
 def getBias(orders):
 	bids = orders["bids"]
 	asks = orders["asks"]
-	bids = bids[:findPeak(bids)]
-	asks = asks[:findPeak(asks)]
-	bV = [float(n[1]) for n in bids]
-	aV = [float(n[1]) for n in asks]
-	bRatio = (float(bids[-1][0]) - float(bids[0][0])) / float(bids[-1][1]) / sum(bV)
-	aRatio = (float(asks[-1][0]) - float(asks[0][0])) / float(asks[-1][1]) / sum(aV)
-	if abs(bRatio) > aRatio:
-		return "ask"
-	else:
+	bids = bids[:20]
+	asks = asks[:20]
+	#bV = [float(n[1]) for n in bids]
+	#aV = [float(n[1]) for n in asks]
+	#bRatio = (float(bids[0][0]) - float(bids[-1][0])) / sum(bV)
+	#aRatio = (float(asks[-1][0]) - float(asks[0][0])) / sum(aV)
+	bRatio = float(getTicker()["last"]) - float(bids[findPeak(bids)][0])
+	aRatio = float(asks[findPeak(asks)][0]) - float(getTicker()["last"])
+	print bRatio, aRatio, [asks[findPeak(asks)][0], asks[findPeak(asks)][1]], [bids[findPeak(bids)][0], bids[findPeak(bids)][1]]
+	if bRatio > aRatio:
 		return "bid"
+	else:
+		return "ask"
 
 ## Testing stuff here
 def test():
@@ -95,7 +97,9 @@ def test():
 				print "BOUGHT 0.1BTC @ "+ str(boughtAt)
 				print trade.btc, trade.usd
 		else:
-			if getBias(orders) == "ask":
+			price = float(getTicker()["last"])
+			print price
+			if price > boughtAt:
 				trade.sell(0.1)
 				print "SOLD 0.1BTC"
 				print trade.btc, trade.usd
@@ -106,5 +110,6 @@ def test():
 		if cycles > 40:
 			pulls = 0
 		if pulls > 400:
+			print "SAFETY LIMIT EXCEEDED"
 			time.sleep(600)
 		time.sleep(15)
