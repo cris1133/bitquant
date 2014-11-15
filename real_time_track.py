@@ -6,6 +6,7 @@ import requests
 import json
 import decimal
 import time
+from matplotlib import rcParams
 global pulls
 
 pulls = 0
@@ -68,9 +69,21 @@ def init():
     price_line.set_xdata(0.0)
     return line,line2,price_line
 
+rcParams['figure.figsize'] = (8, 4)
+rcParams['figure.dpi'] = 150
+#rcParams['axes.color_cycle'] = dark2_colors
+rcParams['lines.linewidth'] = 2
+rcParams['axes.grid'] = True
+#rcParams['axes.facecolor'] = '#eeeeee'
+rcParams['font.size'] = 14
+rcParams['patch.edgecolor'] = 'none'
+
 fig, ax = plt.subplots()
 ax.set_ylim(0,500)
-ax.set_xlim(388,398)
+ax.set_xlim(360,400)
+ax.set_title("Bitstamp Order Book Live")
+ax.set_xlabel("Price ($)")
+ax.set_ylabel("Volume (cumulative)")
 
 orders = getOrderBook()
 transactions = getTransactions()
