@@ -11,7 +11,7 @@ global pulls
 pulls = 0
 global cycles
 cycles = 0
-
+#
 def getOrderBook():
     global pulls
     pulls = pulls + 2

@@ -5,7 +5,7 @@ import time
 import numpy
 import cPickle as pickle
 global pulls
-
+#
 pulls = 0
 
 def getOrderBook():
