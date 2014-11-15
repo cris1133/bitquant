@@ -63,14 +63,15 @@ def getBias(orders):
 	asks = orders["asks"]
 	bids = bids[:20]
 	asks = asks[:20]
+	price = float(getTicker()["last"])
 	#bV = [float(n[1]) for n in bids]
 	#aV = [float(n[1]) for n in asks]
 	#bRatio = (float(bids[0][0]) - float(bids[-1][0])) / sum(bV)
 	#aRatio = (float(asks[-1][0]) - float(asks[0][0])) / sum(aV)
-	bRatio = float(getTicker()["last"]) - float(bids[findPeak(bids)][0])
-	aRatio = float(asks[findPeak(asks)][0]) - float(getTicker()["last"])
-	print bRatio, aRatio, [asks[findPeak(asks)][0], asks[findPeak(asks)][1]], [bids[findPeak(bids)][0], bids[findPeak(bids)][1]]
-	if bRatio > aRatio:
+	bRatio = price - float(bids[findPeak(bids)][0])
+	aRatio = float(asks[findPeak(asks)][0]) - price
+	print price ,bRatio, aRatio, [asks[findPeak(asks)][0], asks[findPeak(asks)][1]], [bids[findPeak(bids)][0], bids[findPeak(bids)][1]]
+	if bRatio < aRatio and price > float(bids[findPeak(bids)][0]):
 		return "bid"
 	else:
 		return "ask"
