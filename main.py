@@ -100,7 +100,7 @@ def test():
 		else:
 			price = float(getTicker()["last"])
 			print price
-			if price > boughtAt:
+			if price > boughtAt or orders["asks"][findPeak(orders["asks"])][0] < boughtAt:
 				trade.sell(0.1)
 				print "SOLD 0.1BTC"
 				print trade.btc, trade.usd
