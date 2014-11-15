@@ -5,7 +5,8 @@ import time
 import numpy
 global pulls
 pulls = 0
-
+global prevorders
+prevorders = []
 ## Data fetching helper functions
 def getOrderBook():
 	global pulls
@@ -82,6 +83,8 @@ def test():
 	global pulls
 	while 1==1:
 		orders = getOrderBook()
+		global prevorders
+		prevorders.append(orders)
 		transactions = getTransactions()
 		## Non trivial stuff starts here
 		if mode == 0:
