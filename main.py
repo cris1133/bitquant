@@ -2,7 +2,8 @@ import requests
 import json
 import decimal
 import time
-global transactions
+import numpy
+global pulls
 pulls = 0
 
 ## Data fetching helper functions
@@ -46,15 +47,30 @@ class papertrade(object):
 		self.usd = self.usd + (amount * price)
 		return price
 
+def findPeak(data):
+	data = data[:20]
+	last = 0
+	lastV = 0
+	for item in range(len(data)-1):
+		diff = float(data[item+1][1]) - float(data[item][1])
+		if diff > last:
+			last = diff
+			lastV = item
 
 ## Quant helper functions
-def compareVolume(orders):
-	buys = [float(n[1]) for n in orders["bids"]]
-	sells = [float(n[1]) for n in orders["asks"]]
-	if sum(buys) > sum(sells):
-		return "buys"
+def getBias(orders):
+	bids = orders["bids"]
+	asks = orders["asks"]
+	bids = bids[:findPeak(bids)]
+	asks = asks[:findPeak(asks)]
+	bV = [float(n[1]) for n in bids]
+	aV = [float(n[1]) for n in asks]
+	bRatio = (float(bids[-1][0]) - float(bids[0][0])) / float(bids[-1][1]) / sum(bV)
+	aRatio = (float(asks[-1][0]) - float(asks[0][0])) / float(asks[-1][1]) / sum(aV)
+	if abs(bRatio) > aRatio:
+		return "bid"
 	else:
-		return "sells"
+		return "ask"
 
 ## Testing stuff here
 def test():
@@ -67,15 +83,15 @@ def test():
 	while 1==1:
 		orders = getOrderBook()
 		transactions = getTransactions()
-		bias = compareVolume(orders)
+		## Non trivial stuff starts here
 		if mode == 0:
-			if bias == "buys" and trade.btc > (100000000*0.1):
+			bias = getBias(orders)
+			if bias == "bid":
 				boughtAt = trade.buy(0.1)
-				mode = 1
 		else:
-			if float(getTicker()['bid']) > boughtAt:
+			if float(getTicker()["bid"]) > boughtAt:
 				trade.sell(0.1)
-				mode = 0
+		## Trivial stuff here
 		print trade.btc, trade.usd, pulls
 		cycles += 1
 		if cycles > 40:
